@@ -36,7 +36,6 @@ def detect_edges(image, low, high):
     return cv2.Canny(image, low, high)
 
 def calculate_density(edge_img):
-    # Remove noise (ignore small edges)
     kernel = np.ones((3,3), np.uint8)
     clean = cv2.morphologyEx(edge_img, cv2.MORPH_CLOSE, kernel)
 
@@ -45,22 +44,15 @@ def calculate_density(edge_img):
 
     density = (edge_pixels / total_pixels) * 100
 
-    # balanced scaling
     density = density * 2.2
     density = min(density, 100)
 
     return round(density, 2)
 
-    # ✅ Balanced scaling
-    density = density * 2.5
-    density = min(density, 100)
-
-    return round(density, 2)
-
 def signal_logic(density):
-    if density < 10:
+    if density < 12:
         return "Low", 20, "Low traffic"
-    elif density < 28:
+    elif density < 30:
         return "Medium", 40, "Moderate traffic"
     else:
         return "High", 60, "Heavy traffic"
@@ -94,10 +86,10 @@ else:
             if selected:
                 image = Image.open(os.path.join(dataset_path, selected)).convert("RGB")
         else:
-            st.warning("No image files found")
+            st.warning("No image files found in dataset")
 
     else:
-        st.error("Dataset folder not found")
+        st.warning("⚠️ Dataset not available in cloud. Please upload an image.")
 
 # ─────────────────────────────
 # PROCESS
@@ -146,7 +138,6 @@ if image:
         st.progress(min(density/100,1.0))
         st.caption("Edge pixel percentage")
 
-    # FILTER non-traffic
     if density < 5:
         st.error("❌ Not a traffic image")
         st.stop()
