@@ -62,7 +62,7 @@ def signal_logic(density):
 # ─────────────────────────────
 st.subheader("📷 Step 1: Upload or Select Image")
 
-option = st.radio("Choose Input Type", ["Upload Image", "Use Dataset"])
+option = st.radio("Choose Input Type", ["Upload Image"])
 
 image = None
 
